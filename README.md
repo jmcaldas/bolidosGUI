@@ -9,3 +9,6 @@ It also enables the user to mask out unwanted regions on the images (e.g. trees,
 For locations with high light pollution, where clouds appear bright in the nightsky, it also implements a tunable cloud detection algorithm. The user can choose a cloud fraction threshold to avoid recordings of events related to cloud displacement.
 
 Finally, the user may enter an FTP server to send the recorded events of a night, during the day after.
+
+The source code can be used to compile in MATLAB to any desired OS. 
+The installer contained in this repo is for Windows 10 64 bit only.
