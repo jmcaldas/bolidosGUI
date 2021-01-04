@@ -1,0 +1,19 @@
+function [thr,nThr,GPS,elSol,resolucion,stationID,thrNubes,thrFN] = getParams()
+%UNTITLED Summary of this function goes here
+%   Detailed explanation goes here
+fid = fopen('params.txt');
+C = textscan(fid, '%s','Headerlines',9);
+fclose(fid);
+
+for i=1:9    
+    thr=A(1);
+    nThr=A(2);
+    GPS=strcat('COM',num2str(A(3)));
+    elSol=A(4);
+    resolucion=[A(5) A(6)];
+    stationID=A(7);
+    thrNubes=A(8);
+    thrFN=A(9);
+end
+end
+
