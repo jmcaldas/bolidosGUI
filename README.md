@@ -11,4 +11,3 @@ For locations with high light pollution, where clouds appear bright in the night
 Finally, the user may enter an FTP server to send the recorded events of a night, during the day after.
 
 The source code can be used to compile in MATLAB to any desired OS. 
-The installer contained in this repo is for Windows 10 64 bit only.
