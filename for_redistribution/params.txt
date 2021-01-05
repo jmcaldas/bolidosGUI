@@ -11,10 +11,11 @@
 %Usr
 %Pwd
 %Nombre de estación
+%UT
 30
 10
 5
--10
+-5
 480
 640
 1
@@ -24,3 +25,4 @@
 astro
 aT:4225;
 FCIEN
+-3
