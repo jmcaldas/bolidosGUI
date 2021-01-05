@@ -1,9 +1,9 @@
-function [thr,nThr,GPS,elSol,resolucion,stationID,thrNubes,thrFN,IP,usr,pass,stationSTR] = getParams()
+function [thr,nThr,GPS,elSol,resolucion,stationID,thrNubes,thrFN,IP,usr,pass,stationSTR,stationUT] = getParams()
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
 fid = fopen([pwd() '\params.txt']);
-C = textscan(fid, '%s','Headerlines',13);
+C = textscan(fid, '%s','Headerlines',14);
 fclose(fid);
 A=C{1};
 
@@ -19,5 +19,6 @@ IP=A(10);IP=IP{1};
 usr=A(11);usr=usr{1};
 pass=A(12);pass=pass{1};
 stationSTR=A(13);stationSTR=stationSTR{1};
+stationUT=str2double(A(14));
 end
 

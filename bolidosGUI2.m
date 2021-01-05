@@ -22,7 +22,7 @@ function varargout = bolidosGUI2(varargin)
 
 % Edit the above text to modify the response to help bolidosGUI2
 
-% Last Modified by GUIDE v2.5 10-Apr-2020 17:40:25
+% Last Modified by GUIDE v2.5 05-Jan-2021 08:37:12
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -103,7 +103,7 @@ try
     vid.ReturnedColorSpace='grayscale';    
     vid.TriggerFrameDelay=5;             
     
-    [thr,nThr,GPS,elSol,resolucion,stationID,thrNubes,thrFN,IP,usr,pass,stationSTR] = getParams();
+    [thr,nThr,GPS,elSol,resolucion,stationID,thrNubes,thrFN,IP,usr,pass,stationSTR,stationUT] = getParams();
     
     try
         sGPS=serial(strcat('COM',num2str(GPS,'%0.0f')));
@@ -137,6 +137,7 @@ try
     % Station
     set(handles.popupmenu13,'Value',stationID);
     set(handles.edit12,'String',stationSTR);
+    set(handles.edit15,'String',stationUT);
     try
         [~,LAT,LON]=gpsRead(sGPS);
         set(handles.edit13,'String',num2str(-dms2degrees(LAT),'%08.4f'));
@@ -412,17 +413,18 @@ if strcmp(status,'RUN')
     pass = get(handles.edit10,'String');
     stationSTR = get(handles.edit12,'String');
     stationID = get(handles.popupmenu13,'Value');
-    [~,~,~,~,resolucion,~,~,~,~,~,~,~] = getParams();
+    stationUT = str2double(get(handles.edit15,'String'));
+    [~,~,~,~,resolucion,~,~,~,~,~,~,~,~] = getParams();
     
     % Write selected parameters to local file params.txt
-    setParams(thr,nThr,GPS,sun_el_max,resolucion,stationID,thrNubes,thrFN,IP,usr,pass,stationSTR);
+    setParams(thr,nThr,GPS,sun_el_max,resolucion,stationID,thrNubes,thrFN,IP,usr,pass,stationSTR,stationUT);
     
     % Copy params.txt to current date folder
     try
         [t00,~,~]=gpsRead(sGPS); % UT
     catch err
         t00=now; %CPU time
-        t00=t00+3/24; %to UT
+        t00=t00+stationUT/24; %to UT
         t00=datevec(t00);
     end
     mjdn=floor(juliandate(datetime(t00)));
@@ -466,7 +468,7 @@ if strcmp(status,'RUN')
         calidadAVI = round(get(handles.slider3,'Value'));        
         flagStop = 1;        
         t=clock;
-        sun = getSun(t,LAT,LON);
+        sun = getSun(t,LAT,LON,stationUT);
         freeze(handles,hObject);
         count=0;
         vid.FramesPerTrigger=Inf;
@@ -482,7 +484,7 @@ if strcmp(status,'RUN')
                 [t00,~,~]=gpsRead(sGPS); % UT
                catch err
                    t00=now; %CPU time
-                   t00=t00+3/24; %to UT
+                   t00=t00+stationUT/24; %to UT
                    t00=datevec(t00);
                    gpsFlag='0';
                end
@@ -508,7 +510,9 @@ if strcmp(status,'RUN')
                
                if FN < thrFN
                    % Cloudless night
-                   
+                   if count==0
+                    set(handles.text12,'String','Running...');
+                   end
                    % Compute image difference between acquired frames
                    im2=imresize(im2,resolucion);
                    im2=im2.*uint8(mascara);
@@ -527,7 +531,7 @@ if strcmp(status,'RUN')
                    
                    % While detection conditions are satisfied, compute
                    % image differences and continue with acquisition.
-                   while nDif>=nThr && nFr<250 && rm<=30
+                   while nDif>=nThr && nFr<250 && rm<=30000
                        detection=1;
                        im1=getsnapshot(vid);                       
                        pause(0.1);
@@ -555,7 +559,7 @@ if strcmp(status,'RUN')
                            [t11,~,~]=gpsRead(sGPS); % UT
                        catch err
                            t11=now; %CPU time
-                           t11=t11+3/24; %to UT
+                           t11=t11+stationUT/24; %to UT
                            t11=datevec(t11);
                            gpsFlag='0';
                        end
@@ -590,7 +594,7 @@ if strcmp(status,'RUN')
                            [t11,~,~]=gpsRead(sGPS); % UT
                        catch err
                            t11=now; %CPU time
-                           t11=t11+3/24; %to UT
+                           t11=t11+stationUT/24; %to UT
                            t11=datevec(t11);
                        end
                    end              
@@ -600,7 +604,7 @@ if strcmp(status,'RUN')
                        [t11,~,~]=gpsRead(sGPS); % UT
                    catch err
                        t11=now; %CPU time
-                       t11=t11+3/24; %to UT
+                       t11=t11+stationUT/24; %to UT
                        t11=datevec(t11);
                    end
                end
@@ -625,7 +629,7 @@ if strcmp(status,'RUN')
                 end
             end
             t = clock;
-            sun = getSun(t,LAT,LON);
+            sun = getSun(t,LAT,LON,stationUT);
             pause(0.05);            
             flushdata(vid);
         end
@@ -690,10 +694,11 @@ function pushbutton5_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global vid sGPS resolucion
 calidadJPG = get(handles.slider4,'Value');
+stationUT = str2double(get(handles.edit15,'String'));
 try
     try
         [UTC,~,~]=gpsRead(sGPS);
-        HLU=datevec(datenum(UTC)-3/24);
+        HLU=datevec(datenum(UTC)-stationUT/24);
     catch err
         HLU=datevec(now);
     end
@@ -1006,4 +1011,27 @@ function slider4_Callback(hObject, eventdata, handles)
 function slider4_CreateFcn(hObject, eventdata, handles)
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor',[.9 .9 .9]);
+end
+
+
+
+function edit15_Callback(hObject, eventdata, handles)
+% hObject    handle to edit15 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit15 as text
+%        str2double(get(hObject,'String')) returns contents of edit15 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit15_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit15 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
 end

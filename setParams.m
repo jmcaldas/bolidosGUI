@@ -1,4 +1,4 @@
-function setParams(thr,nThr,GPS,elSol,resolucion,stationID,thrNubes,thrFN,IP,usr,pwd,stationSTR)
+function setParams(thr,nThr,GPS,elSol,resolucion,stationID,thrNubes,thrFN,IP,usr,pwd,stationSTR,stationUT)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -16,6 +16,7 @@ fprintf(fid,'%s\n','%Host IP');
 fprintf(fid,'%s\n','%Usr');
 fprintf(fid,'%s\n','%Pwd');
 fprintf(fid,'%s\n','%Nombre de estación');
+fprintf(fid,'%s\n','%UT');
 
 fprintf(fid,'%0.0f\n',thr);
 fprintf(fid,'%0.0f\n',nThr);
@@ -29,7 +30,8 @@ fprintf(fid,'%.1f\n',thrFN);
 fprintf(fid,'%s\n',IP);
 fprintf(fid,'%s\n',usr);
 fprintf(fid,'%s\n',pwd);
-fprintf(fid,'%s',stationSTR);
+fprintf(fid,'%s\n',stationSTR);
+fprintf(fid,'%0.0f',stationUT);
 fclose(fid);
 
 end

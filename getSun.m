@@ -1,4 +1,4 @@
-function sun = getSun(t,LAT,LON)
+function sun = getSun(t,LAT,LON,UTC)
 
 
 
@@ -15,7 +15,7 @@ time.day = t(3);
 time.hour = t(4);
 time.min = t(5);
 time.sec = t(6);
-time.UTC = -3;
+time.UTC = UTC;
 %SOL
 sun = sun_position(time,location);
     
