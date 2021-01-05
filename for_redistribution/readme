@@ -1,4 +1,4 @@
-Version 1.1 bolidosGUI
+Version 1.0 bolidosGUI
 Desktop app for automatic meteor detection.
 Windows installer. For installation on your Windows PC extract main zip file, and execute MyAppInstaller.exe
 This will download latest version of MATLAB(R) runtime environment, and install the app on your PC.
