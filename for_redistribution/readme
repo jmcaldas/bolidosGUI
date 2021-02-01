@@ -9,3 +9,4 @@ New feature(s):
 -selectable timezone
 Bug fix(es):
 -change of status message when entering detection time (Thanks to Alvaro Guaimare!).
+-issue with mask file (Thanks to Fiorella Alzubidez and Alvaro Guaimare!). 
