@@ -7,7 +7,7 @@ str = fscanf(sGPS);
 C = strsplit(str,',');
 count=1;
 
-while ~strcmp(C{1},'$GPRMC') && count<10
+while ~strcmp(C{1},'$GPRMC') && ~strcmp(C{1},'$GPGGA') && count<10 
     str = fscanf(sGPS);
     C = strsplit(str,',');  
     count=count+1;

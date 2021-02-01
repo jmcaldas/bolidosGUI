@@ -149,7 +149,7 @@ try
     
     % Mask
     try
-        m = load([pwd() 'Mask.mat']);
+        m = load([pwd() '/Mask.mat']);
         mascara=m.BW;
     catch err
         mascara=ones(resolucion(1),resolucion(2));
@@ -476,7 +476,7 @@ if strcmp(status,'RUN')
         
         while flagStop            
             if 90-sun.zenith<sun_el_max
-               
+               tic
                % Get current time, either from GPS or local PC 
                detection=0;
                gpsFlag='1';
@@ -497,13 +497,16 @@ if strcmp(status,'RUN')
                mkdir(directorio);
                
                % Get two consecutive frames, separated by 0.1 s
+               toc
+               tic
                im1=getsnapshot(vid);
                im1=imresize(im1,resolucion);
                im1=im1.*uint8(mascara);
                pause(0.1);
                im2=getsnapshot(vid);
-               
+               toc
                % Estimate cloud fraction
+               tic
                nNube=length(im1(im1>thrNubes));
                nTotal=length(im1(im1>0));
                FN=nNube/nTotal;
@@ -632,6 +635,7 @@ if strcmp(status,'RUN')
             sun = getSun(t,LAT,LON,stationUT);
             pause(0.05);            
             flushdata(vid);
+            toc
         end
         unfreeze(handles);
         stop(vid);
@@ -802,7 +806,7 @@ try
         [~,BW]=roifill(img);
         img2=img.*uint8(BW);
         imshow(img2);
-        save([pwd() 'Mask.mat'],'BW');
+        save([pwd() '/Mask.mat'],'BW');
         mascara=BW;
     else
         waitfor(msgbox('Resolución de imagen no válida.'));
