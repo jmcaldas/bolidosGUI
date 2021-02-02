@@ -1,12 +1,11 @@
-Version 1.1 bolidosGUI
+Version 1.2 bolidosGUI
 Desktop app for automatic meteor detection.
 Windows installer. For installation on your Windows PC extract main zip file, and execute MyAppInstaller.exe
 This will download latest version of MATLAB(R) runtime environment, and install the app on your PC.
 For comments or suggestions:
 mcaldas@fisica.edu.uy, Faculty of Sciences, University of the Republic of Uruguay.
 
-New feature(s):
--selectable timezone
-Bug fix(es):
--change of status message when entering detection time (Thanks to Alvaro Guaimare!).
--issue with mask file (Thanks to Fiorella Alzubidez and Alvaro Guaimare!). 
+New features:
+-improvement in detection algorithm (GPS is read only when event is detected, and time shift between CPU and GPS time is stored).
+-selectable threshold on median distance to centroid of pixels above detection threshold.
+
