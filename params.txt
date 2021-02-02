@@ -12,8 +12,8 @@
 %Pwd
 %Nombre de estación
 %UT
-30000
-10000
+30
+10
 5
 90
 480

@@ -3,15 +3,14 @@
     <param.appname>bolidosGUI</param.appname>
     <param.icon />
     <param.icons />
-    <param.version>1.1</param.version>
+    <param.version>1.2</param.version>
     <param.authnamewatermark>M. Caldas, V. Abraham, L. Velasco</param.authnamewatermark>
     <param.email>mcaldas@fisica.edu.uy</param.email>
     <param.company>Facultad de Ciencias</param.company>
     <param.summary>Desktop application for automatic meteor detection.</param.summary>
     <param.description>New features:
--selectable timezone
-Bug fixes:
--change of status message when entering detection time</param.description>
+-improvement in detection algorithm (GPS is read only when event is detected, and time shift between CPU and GPS time is stored).
+-selectable threshold on median distance to centroid of pixels above detection threshold.</param.description>
     <param.screenshot>${PROJECT_ROOT}\peque.png</param.screenshot>
     <param.guid />
     <param.installpath.string>\Facultad de Ciencias\bolidosGUI\</param.installpath.string>
