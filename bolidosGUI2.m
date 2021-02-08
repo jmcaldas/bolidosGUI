@@ -422,7 +422,7 @@ if strcmp(status,'RUN')
     
     % Copy params.txt to current date folder
     t00=now; %CPU time
-    t00=t00+stationUT/24; %to UT
+    t00=t00-stationUT/24; %to UT
     t00=datevec(t00);
     
     mjdn=floor(juliandate(datetime(t00)));
@@ -474,13 +474,20 @@ if strcmp(status,'RUN')
         
         while flagStop            
             if 90-sun.zenith<sun_el_max
-               
-               % Get current time, either from GPS or local PC
+                
+               % Get current time from  local PC
                detection=0;
                               
                t00=now; %CPU time
-               t00=t00+stationUT/24; %to UT
+               t00=t00-stationUT/24; %to UT
                t00=datevec(t00);                            
+               
+               % Create if necessary folder for current JD
+               mjdn=floor(juliandate(datetime(t00)));
+               id=floor(mjdn/100);
+               resto=rem(mjdn,100);
+               directorio = strcat('Events/',num2str(stationID),'/',num2str(id),'/',num2str(resto,'%02.f'));
+               mkdir(directorio);               
                
                % Get two consecutive frames, separated by 0.1 s
                               
@@ -489,7 +496,6 @@ if strcmp(status,'RUN')
                im1=im1.*uint8(mascara);
                pause(0.1);
                im2=getsnapshot(vid);
-               
                
                % Estimate cloud fraction
                nNube=length(im1(im1>thrNubes));
@@ -509,7 +515,7 @@ if strcmp(status,'RUN')
                    % Get number of pixels in difference image, brighter
                    % than thr. Compute their centroid and the median 
                    % distance to centroid. Also, get number of available 
-                   % frames in buffer.                   
+                   % frames in buffer.
                    nDif=length(find(dif>=thr));
                    nFr = vid.FramesAvailable;
                    [I,J]=find(dif>=thr);
@@ -546,8 +552,8 @@ if strcmp(status,'RUN')
                        try
                            [tGPS,~,~]=gpsRead(sGPS); % UT
                            tPC=now; %CPU time
-                           tPC=tPC+stationUT/24; %to UT
-                           tPC=datevec(tPC);
+                           tPC=tPC-stationUT/24; %to UT
+                           tPC=datevec(tPC);                           
                            deltaTime=24*3600*(datenum(tGPS)-datenum(tPC)); %in seconds
                            gpsFlag=1;
                        catch err
@@ -566,7 +572,7 @@ if strcmp(status,'RUN')
                            % (1) or not (0). Also, metadata is stored in this file.
                            [frames,~,metadata]=getdata(vid); 
                            count=count+1;                           
-                           filename=strcat(directorio,'/Event_',num2str(stationID),'_',datestr(metadata(1).AbsTime,'yyyy-mm-dd-HH-MM-SS'),'_',gpsFlag,'.mat');
+                           filename=strcat(directorio,'/Event_',num2str(stationID),'_',datestr(metadata(1).AbsTime,'yyyy-mm-dd-HH-MM-SS'),'.mat');
                            t=[deltaTime gpsFlag];
                            save(filename,'metadata','t');                       
                            aviobj = VideoWriter(strcat(directorio,'/Station_',num2str(stationID),'_',datestr(metadata(1).AbsTime,'yyyy-mm-dd-HH-MM-SS'),'.avi'));
@@ -581,23 +587,16 @@ if strcmp(status,'RUN')
                            set(handles.text12,'String',['Eventos detectados:' ' ' num2str(count)]);
                        catch err
                        end
-                       start(vid);
-                   else                       
-                       t11=now; %CPU time
-                       t11=t11+stationUT/24; %to UT
-                       t11=datevec(t11);                       
+                       start(vid);                                       
                    end
                else
-                   set(handles.text12,'String',['Fracción nubosidad:' ' ' num2str(FN*100,'%0.f') '%']);                   
-                   t11=now; %CPU time
-                   t11=t11+stationUT/24; %to UT
-                   t11=datevec(t11);
+                   set(handles.text12,'String',['Fracción nubosidad:' ' ' num2str(FN*100,'%0.f') '%']);                                     
                end
-               % Save this run in log file; t00, t11, cloud fraction and
-               % event count.
+               % Save this run in log file; t00 cloud fraction and event count.
                fid = fopen(strcat(directorio,'/Log_',strcat(num2str(id),num2str(rem(mjdn,100),'%02.f')),'.txt'),'a+');
-               fprintf(fid,'%12.8f %12.8f %6.3f %6.1f\r\n',[datenum(t00) datenum(t11) FN count]);
-               fclose(fid);
+               fprintf(fid,'%12.8f %6.3f %6.1f\r\n',[datenum(t00) FN count]);
+               fclose(fid);               
+               
             else
                 set(handles.text12,'String',['Elevación solar:' ' ' num2str(90-sun.zenith)]);
                 count=0;
@@ -615,9 +614,8 @@ if strcmp(status,'RUN')
             end
             t = clock;
             sun = getSun(t,LAT,LON,stationUT);
-            pause(0.05);            
-            flushdata(vid);
-            
+            pause(0.01);            
+            flushdata(vid);            
         end
         unfreeze(handles);
         stop(vid);
@@ -684,7 +682,7 @@ stationUT = str2double(get(handles.edit15,'String'));
 try
     try
         [UTC,~,~]=gpsRead(sGPS);
-        HLU=datevec(datenum(UTC)-stationUT/24);
+        HLU=datevec(datenum(UTC)+stationUT/24);
     catch err
         HLU=datevec(now);
     end
